@@ -1,0 +1,56 @@
+<%
+  const { lexisNexis } = it;
+%>
+<!DOCTYPE html>
+<html>
+  <head>
+    <link href="/style.css?<%= Date.now() %>" rel="stylesheet" type="text/css">
+    <% if (lexisNexis.enabled) { %>
+      <script type="text/javascript" src="https://h.online-metrix.net/fp/tags.js?org_id=<%= lexisNexis.orgId %>&session_id=<%= lexisNexis.sessionId %>"></script>
+    <% } %>
+  </head>
+  <body>
+    <h1>LexisNexis device identification demo</h1>
+    <form method="post">
+      <label>Email address:</label>
+      <input type="email" name="email" />
+      <button type="submit">Submit</button>
+    </form>
+
+
+    <footer>
+      <small>
+        Org id: <%= lexisNexis.orgId || "none" %>
+        <br>
+        Session id: <%= lexisNexis.sessionId || "none" %>
+        <br>
+        <span id="profiling-started" style="color: green; display: none;">Profiling started</span>
+      </small>
+    </footer>
+
+    <script>
+      function check() {
+          if (typeof tmx_profiling_started == "undefined" || !tmx_profiling_started) {
+              setTimeout(check, 100);
+          } else {
+              document.getElementById('profiling-started').style.display = '';
+          }
+      }
+      check();
+
+      function handleMessage(event)
+      {
+          // event.data will be in format "tmx_profiling_complete:<session_id>"
+          console.log("profiling_complete called with session_id "+event.data.split(':')[1]);
+      }
+      window.addEventListener("message", handleMessage, false);
+
+    </script>
+
+    <% if (lexisNexis.enabled) { %>
+      <noscript>
+        <iframe style="width: 100px; height: 100px; border: 0; position: absolute; top: -5000px;" src="https://h.online-metrix.net/fp/tags?org_id=<%= lexisNexis.orgId %>&session_id=<%= lexisNexis.sessionId %>"></iframe>
+      </noscript>
+    <% } %>
+  </body>
+</html>

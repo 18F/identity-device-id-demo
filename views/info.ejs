@@ -1,0 +1,59 @@
+<%
+  const INTERESTING_KEYS = [
+  "review_status",
+  "risk_rating",
+  "policy_score",
+  "reason_code",
+  ];
+%>
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="/style.css?<%= Date.now() %>" rel="stylesheet" type="text/css">
+  <style>
+    table {
+      border-collapse: collapse;
+    }
+    td {
+      border-bottom: 1px solid #ccc;
+    }
+    td.key {
+      font-weight: bold;
+      font-family: monospace;
+      padding: 1em;
+      vertical-align: top;;
+    }
+    td.value {
+      font-family: monospace;
+      padding: 1em;
+      white-space: pre;
+    }
+  </style>
+</head>
+<body>
+  <h1>LexisNexis device identification</h1>
+
+  <p>
+    Here's what we think of you:
+  </p>
+
+  <table class="interesting-keys">
+  <% INTERESTING_KEYS.forEach((key) => { %>
+    <tr>
+      <td class="key"><%= key %></td>
+      <td class="value"><%= Array.isArray(it.data[key]) ? it.data[key].join("\n") : it.data[key] %></td>
+    </tr>
+  <% }); %>
+  </table>
+
+  <h2>Full response</h2>
+
+  <p>
+    For more information about what each of these fields means, consult the
+    <a href="https://portal.threatmetrix.us/kb/index.htm#t=implementation%2Fattributes%2Fattribute%20reference%20matrix%20(arm).htm">Attribute Reference Matrix (ARM)</a>.
+  </p>
+
+  <pre><%= JSON.stringify(it.data, null, 2) %></pre>
+
+</body>
+</html>
