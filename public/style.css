@@ -3,3 +3,21 @@ body {
   margin: 2em auto;
   max-width: 800px;
 }
+
+form > button {
+  margin: 2em 0;
+}
+
+.field {
+  display: flex;
+  flex-direction: row;
+  margin-bottom: 1em;
+}
+
+.field > label {
+  flex: 1
+}
+
+.field > input {
+  flex: 4
+}

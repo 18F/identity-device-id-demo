@@ -1,3 +1,4 @@
+import { Sha256 } from "https://deno.land/std/hash/sha256.ts";
 import {
   Application,
   Context,
@@ -7,6 +8,7 @@ import {
   Router,
   viewEngine,
 } from "./deps.ts";
+import { sessionQuery } from "./lexis-nexis.ts";
 
 dotEnv.config({ export: true });
 
@@ -19,12 +21,23 @@ async function getSessionId(ctx: Context): Promise<string> {
   return id;
 }
 
-async function sessionQuery() {
-}
-
 const router = new Router();
 
 router.get("/", async (ctx: Context) => {
+  if (ctx.request.url.searchParams.has("reset-session")) {
+    await ctx.cookies.delete("sessionId");
+    ctx.response.redirect("/");
+    return;
+  }
+
+  const newSessionId = ctx.request.url.searchParams.get("sessionId");
+  if (newSessionId) {
+    // allow manually overriding the session id
+    ctx.cookies.set("sessionId", newSessionId);
+    ctx.response.redirect("/");
+    return;
+  }
+
   const orgId = Deno.env.get("LEXIS_NEXIS_ORG_ID") ?? "";
   const sessionId = await getSessionId(ctx);
   const enabled = !!(orgId && sessionId);
@@ -40,43 +53,25 @@ router.get("/", async (ctx: Context) => {
 
 router.post("/", async (ctx: Context) => {
   const body = await ctx.request.body({ type: "form" }).value;
-  const email = (body.get("email") ?? "").trim();
 
-  if (email.length === 0) {
-    ctx.response.redirect("/");
-    return;
-  }
+  const email = (body.get("email") ?? "").trim();
+  const firstName = body.get("firstName") ?? "";
+  const lastName = body.get("lastName") ?? "";
 
   const orgId = Deno.env.get("LEXIS_NEXIS_ORG_ID") ?? "";
   const apiKey = Deno.env.get("LEXIS_NEXIS_API_KEY") ?? "";
   const sessionId = await getSessionId(ctx);
 
-  const resp = await fetch(
-    " https://h-api.online-metrix.net/api/session-query",
-    {
-      method: "POST",
-      headers: {
-        // "Accept": "application/json",
-      },
-      body: new URLSearchParams({
-        output_format: "JSON",
-        org_id: orgId,
-        api_key: apiKey,
-        session_id: sessionId,
-        service_type: "All",
-        event_type: "LOGIN",
-        account_email: email,
-      }).toString(),
+  const data = await sessionQuery({
+    orgId,
+    apiKey,
+    sessionId,
+    user: {
+      email,
+      firstName,
+      lastName,
     },
-  );
-
-  if (resp.status !== 200) {
-    console.error("%d %s", resp.status, await resp.text());
-    ctx.response.redirect("/");
-    return;
-  }
-
-  const data = await resp.json();
+  });
 
   ctx.render("info.ejs", {
     data,
