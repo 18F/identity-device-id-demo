@@ -1,4 +1,3 @@
-import { Sha256 } from "https://deno.land/std/hash/sha256.ts";
 import {
   Application,
   Context,
@@ -99,11 +98,17 @@ app.use(async (ctx, next) => {
   }
 });
 
+let port: string | number | undefined = Deno.env.get("PORT");
+port = port ? parseInt(String(port), 10) : 8000;
+if (isNaN(port)) {
+  port = 8000;
+}
+
 app.addEventListener(
   "listen",
   () => {
-    console.log("Listening");
+    console.log("Listening on port %d", port);
   },
 );
 
-await app.listen({ port: 8000 });
+await app.listen({ port });

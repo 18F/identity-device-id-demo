@@ -15,8 +15,11 @@
     <% } %>
   </head>
   <body>
-    <h1>LexisNexis device identification demo</h1>
+    <h1>Device identification demo</h1>
     <form method="post">
+      <p>
+        (Optional) enter some information about yourself:
+      </p>
       <% FIELDS.forEach(({name, type, label}) => { %>
         <div class="field">
           <label for="input-<%= name %>"><%= label %></label>
