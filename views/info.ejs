@@ -41,7 +41,7 @@
   <% INTERESTING_KEYS.forEach((key) => { %>
     <tr>
       <td class="key"><%= key %></td>
-      <td class="value"><%= Array.isArray(it.data[key]) ? it.data[key].join("\n") : it.data[key] %></td>
+      <td class="value"><%= Array.isArray(data[key]) ? data[key].join("\n") : data[key] %></td>
     </tr>
   <% }); %>
   </table>
@@ -57,7 +57,7 @@
     <a href="https://portal.threatmetrix.us/kb/index.htm#t=implementation%2Fattributes%2Fattribute%20reference%20matrix%20(arm).htm">Attribute Reference Matrix (ARM)</a>.
   </p>
 
-  <pre><%= JSON.stringify(it.data, null, 2) %></pre>
+  <pre><%= JSON.stringify(data, null, 2) %></pre>
 
 </body>
 </html>

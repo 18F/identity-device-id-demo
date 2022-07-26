@@ -1,0 +1,9 @@
+{
+  "buildOptions": {},
+  "compilerOptions": {
+    "alwaysStrict": true,
+    "charset": "utf8",
+    "esModuleInterop": true,
+    "outDir": "dist"
+  }
+}
