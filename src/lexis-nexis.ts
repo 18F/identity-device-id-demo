@@ -1,3 +1,4 @@
+import fetch from "node-fetch";
 type SessionQueryOptions = {
   apiKey: string;
   orgId: string;
@@ -12,7 +13,7 @@ type SessionQueryOptions = {
 type SessionQueryResponse = Record<string, unknown>;
 
 export async function sessionQuery(
-  options: SessionQueryOptions,
+  options: SessionQueryOptions
 ): Promise<SessionQueryResponse> {
   const requestBody: Record<string, string> = {
     output_format: "JSON",
@@ -32,7 +33,7 @@ export async function sessionQuery(
       method: "POST",
       headers: {},
       body: new URLSearchParams(requestBody).toString(),
-    },
+    }
   );
 
   const responseBody = await resp.text();
