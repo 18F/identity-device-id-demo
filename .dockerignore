@@ -1,0 +1,7 @@
+.dockerignore
+.editorconfig
+.env
+.git
+.gitignore
+.vscode
+Dockerfile
