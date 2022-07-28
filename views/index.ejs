@@ -15,7 +15,8 @@
   </head>
   <body>
     <h1>Device identification demo</h1>
-    <form method="post">
+    <form method="post" action="/">
+      <input type="hidden" name="sessionId" value="<%= lexisNexis.sessionId %>">
       <p>
         (Optional) enter some information about yourself:
       </p>
@@ -34,8 +35,8 @@
         Org id: <%= lexisNexis.orgId || "none" %>
         <br>
         <% if (lexisNexis.sessionId) { %>
-          Session id: <a href="/?sessionId=<%= encodeURIComponent(lexisNexis.sessionId) %>"><%= lexisNexis.sessionId %></a>
-          <a href="/?reset-session">(reset)</a>
+          Session id: <%= lexisNexis.sessionId %>
+          <a href="/">(reset)</a>
           <br>
         <% } %>
         <span id="profiling-started" style="color: green; display: none;">Profiling started</span>

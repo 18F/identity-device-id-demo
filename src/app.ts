@@ -1,7 +1,6 @@
-import cookieParser from "cookie-parser";
+import { randomUUID } from "crypto";
 import express, { NextFunction, Request, Response } from "express";
 import path from "path";
-import { getSessionId } from "./session-id";
 import { sessionQuery } from "./lexis-nexis";
 
 export const app = express();
@@ -14,27 +13,17 @@ app.use(
     extended: false,
   })
 );
-app.use(cookieParser());
 
 app.get(
   "/",
   asyncHandler(async (req, res) => {
-    if (req.query["reset-session"] != null) {
-      res.clearCookie("sessionId");
-      res.redirect("/");
-      return;
-    }
-
-    const newSessionId = req.query["sessionId"];
-    if (newSessionId) {
-      // allow manually overriding the session id
-      res.cookie("sessionId", newSessionId);
-      res.redirect("/");
+    const sessionId = String(req.query["sessionId"] ?? "").trim();
+    if (sessionId.length === 0) {
+      res.redirect(`/?sessionId=${encodeURIComponent(randomUUID())}`);
       return;
     }
 
     const orgId = process.env["LEXIS_NEXIS_ORG_ID"] ?? "";
-    const sessionId = getSessionId(req, res);
     const enabled = !!(orgId && sessionId);
 
     res.render("index.ejs", {
@@ -55,11 +44,10 @@ app.post(
     const email = (body["email"] ?? "").trim();
     const firstName = body["firstName"] ?? "";
     const lastName = body["lastName"] ?? "";
+    const sessionId = body["sessionId"] ?? "";
 
     const orgId = process.env["LEXIS_NEXIS_ORG_ID"] ?? "";
     const apiKey = process.env["LEXIS_NEXIS_API_KEY"] ?? "";
-
-    const sessionId = getSessionId(req, res);
 
     const data = await sessionQuery({
       orgId,
