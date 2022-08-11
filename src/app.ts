@@ -2,15 +2,32 @@ import { randomUUID } from "crypto";
 import express, { NextFunction, Request, Response } from "express";
 import path from "path";
 import { sessionQuery } from "./lexis-nexis";
+import { expressCspHeader, SELF } from "express-csp-header";
+
+import { UNSAFE_EVAL, UNSAFE_INLINE } from "csp-header";
 
 export const app = express();
 
 app.set("views", path.join(__dirname, "../views"));
 
 app.use(express.static("public"));
+
 app.use(
   express.urlencoded({
     extended: false,
+  })
+);
+
+app.use(
+  expressCspHeader({
+    directives: {
+      "default-src": [SELF],
+      "connect-src": [SELF, "h.online-metrix.net"],
+      "frame-src": ["h.online-metrix.net"],
+      "img-src": [SELF, "*.online-metrix.net"],
+      "script-src": [SELF, "h.online-metrix.net", UNSAFE_EVAL, UNSAFE_INLINE],
+      "style-src": [SELF, UNSAFE_INLINE],
+    },
   })
 );
 
